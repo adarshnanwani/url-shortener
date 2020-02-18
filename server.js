@@ -2,6 +2,10 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 
+// Bodyparser middleware
+app.use(express.json());
+
+// cors middleware
 app.use(
   cors({
     optionsSuccessStatus: 200
