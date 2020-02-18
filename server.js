@@ -12,9 +12,7 @@ app.use(
   })
 );
 
-app.get("/", (req, res) => {
-  res.json({ msg: "works" });
-});
+app.use("/api/shorturl", require("./routes/api/shorturl"));
 
 const PORT = process.env.PORT || 5000;
 
