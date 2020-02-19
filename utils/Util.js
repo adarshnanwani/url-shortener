@@ -1,7 +1,12 @@
 module.exports.generateHashCode = str => {
   let buff = new Buffer(str);
   let base64data = buff.toString("base64");
-  let hash = base64data.substr(0, 4) + base64data[8] + base64data[12];
+
+  let hash = "";
+  for (let i = 0; i < 6; i++) {
+    hash =
+      hash + base64data[Math.round(Math.random(base64data.length - 1) * 10)];
+  }
   return hash;
 };
 

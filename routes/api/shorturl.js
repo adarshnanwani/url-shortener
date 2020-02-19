@@ -1,36 +1,39 @@
 const express = require("express");
 const router = express.Router();
+const ShortUrl = require("../../models/shorturl.model");
 const util = require("../../utils/Util");
 
 router.get("/:hash", (req, res) => {
   const hash = req.params.hash;
-  if (shortUrls[hash]) {
-    res.redirect(shortUrls[hash]);
-  } else {
-    res.json({ msg: "Invalid short url" });
-  }
+  ShortUrl.find({ short_url: hash })
+    .exec()
+    .then(data => {
+      if (data && data.length) {
+        const { original_url } = data[0];
+        res.redirect(original_url);
+      } else {
+        res.sendFile("/views/404.html");
+      }
+    })
+    .catch(err => res.json("Error: " + err));
 });
 
 router.post("/new", (req, res) => {
   const url = req.body.url;
   const isValidUrl = util.isValidUrl(url);
   if (isValidUrl) {
-    res.json({ original_url: url, short_url: generateShortUrl(url) });
+    const hash = util.generateHashCode(url);
+    const newShortUrl = new ShortUrl({ original_url: url, short_url: hash });
+    newShortUrl
+      .save()
+      .then(data => {
+        console.log(data);
+        res.json({ original_url: url, short_url: hash });
+      })
+      .catch(err => res.status(400).json("Error: " + err));
   } else {
     res.json({ error: "invalid URL" });
   }
 });
-
-const shortUrls = {};
-
-const generateShortUrl = url => {
-  const hash = util.generateHashCode(url);
-  if (shortUrls[hash]) {
-    return hash;
-  } else {
-    shortUrls[hash] = url;
-  }
-  return hash;
-};
 
 module.exports = router;
