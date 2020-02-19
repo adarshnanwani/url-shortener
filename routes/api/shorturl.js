@@ -12,7 +12,7 @@ router.get("/:hash", (req, res) => {
         const { original_url } = data[0];
         res.redirect(original_url);
       } else {
-        res.json("Invalid URL");
+        res.sendFile("/views/404.html");
       }
     })
     .catch(err => res.json("Error: " + err));
